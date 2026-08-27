@@ -1,6 +1,6 @@
 {
   "name": "gost89",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "Gost89 in JS",
   "main": "index.js",
   "scripts": {
@@ -23,6 +23,8 @@
     "mocha": "^5.2.0"
   },
   "dependencies": {
-    "buffer": ">= 3.0"
+    "buffer": ">= 3.0",
+    "dstu7564": "1.1.0",
+    "dstu7624": "1.0.0"
   }
 }
