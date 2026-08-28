@@ -36,6 +36,21 @@ function kupynaStore() {
     };
 }
 
+function gostMacStore() {
+    var store = kupynaStore();
+    store.pfxMac = {
+        algorithm: 'Gost34311',
+        salt: salt,
+        iters: 2,
+        digest: Buffer.from(
+            'f7874a20b743aba0927ed4c43a62f97ede16fc8922b0117d0ea1e2ff75c2f644',
+            'hex'
+        ),
+        authenticatedSafe: Buffer.from('disposable authenticated safe', 'ascii')
+    };
+    return store;
+}
+
 describe('compat stores', function () {
     this.timeout(30000);
 
@@ -50,6 +65,30 @@ describe('compat stores', function () {
     it('decrypts and unpads the UAPKI Kupyna/Kalyna profile vector', function () {
         var clear = compat.decode_data(kupynaStore(), '12345');
         assert.equal(clear.toString('ascii'), 'disposable Kupyna PFX vector');
+    });
+
+    it('verifies the UAPKI GOST 34.311 outer MAC before Kalyna decryption', function () {
+        var store = gostMacStore();
+        assert.equal(
+            compat.pfx_mac('12345', store.pfxMac).toString('hex'),
+            'f7874a20b743aba0927ed4c43a62f97ede16fc8922b0117d0ea1e2ff75c2f644'
+        );
+        assert.equal(
+            compat.decode_data(store, '12345').toString('ascii'),
+            'disposable Kupyna PFX vector'
+        );
+
+        assert.throws(function () {
+            compat.decode_data(gostMacStore(), 'incorrect');
+        }, /Invalid PFX password or integrity check/);
+
+        var tampered = gostMacStore();
+        tampered.pfxMac.digest = Buffer.from(tampered.pfxMac.digest);
+        tampered.pfxMac.digest[0] ^= 1;
+        tampered.body = Buffer.alloc(1);
+        assert.throws(function () {
+            compat.decode_data(tampered, '12345');
+        }, /Invalid PFX password or integrity check/);
     });
 
     it('rejects an incorrect Kupyna/Kalyna profile password', function () {
@@ -191,6 +230,14 @@ describe('compat stores', function () {
         assert.throws(function () {
             compat.decode_data(store, '12345');
         }, /Unsupported PBES2 KDF/);
+    });
+
+    it('rejects unknown outer PFX MAC algorithms', function () {
+        var store = kupynaStore();
+        store.pfxMac.algorithm = 'unknown-mac';
+        assert.throws(function () {
+            compat.decode_data(store, '12345');
+        }, /Unsupported PFX MAC algorithm/);
     });
 
     it('preserves the legacy GOST PBES2 profile', function () {

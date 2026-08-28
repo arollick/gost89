@@ -18,7 +18,7 @@ Algos
 * Dumb KDF (N-iterations of hash)
 * PFX/PBES2 compatibility provider for the Kupyna-256 KMAC KDF and Kalyna-256/256-CBC profile (via `dstu7564` and `dstu7624`)
 
-The compatibility provider accepts non-empty PBKDF/PFX salts up to 1024 bytes and iteration counts from 1 through 100000. Kupyna/Kalyna DTOs are identified from their KDF and cipher profile, not from a caller-supplied container label. They require authenticated Kupyna `MacData`, allow at most 16 protected stores, and cap the combined protected-store plus PFX MAC KDF work at 300000 iterations; an inconsistent explicit container label is rejected. Standalone legacy GOST/IIT loading remains supported.
+The compatibility provider accepts non-empty PBKDF/PFX salts up to 1024 bytes and iteration counts from 1 through 100000. Kupyna/Kalyna DTOs are identified from their KDF and cipher profile, not from a caller-supplied container label. They require authenticated `MacData` using either DSTU 7564-256 KMAC or UAPKI's GOST 34.311 HMAC profile, allow at most 16 protected stores, and cap the combined protected-store plus PFX MAC KDF work at 300000 iterations; unknown MAC algorithms and inconsistent explicit container labels are rejected. Standalone legacy GOST/IIT loading remains supported.
 
 [0] http://dstszi.kmu.gov.ua/dstszi/control/uk/publish/article?showHidden=1&art_id=90096&cat_id=38837
 
