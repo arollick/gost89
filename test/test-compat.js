@@ -272,3 +272,16 @@ describe('compat stores', function () {
         assert.equal(clear.toString('ascii'), 'legacy IIT');
     });
 });
+
+describe('compat hashes', function () {
+    it('exposes DSTU 7564-256 for certificate signatures', function () {
+        var contents = Buffer.from('DSTU 7564 compatibility', 'utf8');
+        var algos = compat.algos();
+
+        assert.equal(
+            algos.hashDstu7564(contents).toString('hex'),
+            compat.compute_hash_dstu7564(contents).toString('hex')
+        );
+        assert.equal(algos.hashDstu7564(contents).length, 32);
+    });
+});
