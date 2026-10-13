@@ -1,0 +1,12 @@
+{
+  "name": "dstu7564",
+  "version": "1.1.0",
+  "description": "DSTU 7564 hash and KMAC using Uint32 word pairs",
+  "main": "dstu7564.js",
+  "license": "BSD-2-Clause",
+  "engines": {
+    "node": ">=14"
+  },
+  "private": true
+}
+
